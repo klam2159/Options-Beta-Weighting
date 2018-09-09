@@ -13,8 +13,7 @@ contract = # of option contract
 '''
 
 from iexfinance import *
-from datetime import *
-from pandas import *
+
 class Option(object):
     List = {}
     def __init__(self, name, LPsp, SPsp, SCsp, LCsp, OP, contract =1):
@@ -28,6 +27,8 @@ class Option(object):
         self.LCsp = LCsp
         self.OP = OP
         self.contract = contract
+        # Everytime a new Option instance is created it will check to see if the instance name has already been used, if so
+        # it will add that instance to the Option.List dict
         if name in Option.List:
             Option.List[name].append(self)
         else:
@@ -84,68 +85,3 @@ class Option(object):
 
     def __str__(self):
         return '[' +self.name+' ' +str(self.LPsp)+'/'+str(self.SPsp)+'/'+str(self.SCsp)+'/'+str(self.LCsp)+ ' @'+str(self.OP)+']'
-
-    def get_diff(self, days):
-        startDate = datetime.now() + timedelta(days = days*-1 )
-        endDate = datetime.now()
-        data = get_historical_data(self.name, start=startDate, end=endDate, output_format = 'pandas')
-        diff = []
-        for n in range(1, len(data['close'])):
-            result = ((data['close'][n]/data['close'][n-1])-1)*100
-            diff.append(result)
-
-        Return = DataFrame({'Daily return':[.9,1.3,1.7,0.4,0.7]})
-        return Return['Daily return']
-
-    def SPY_diff(self, days):
-        startDate = datetime.now() + timedelta(days = days*-1 )
-        endDate = datetime.now()
-        data = get_historical_data('SPY', start=startDate, end=endDate, output_format = 'pandas')
-        diff = []
-        for n in range(1, len(data['close'])):
-            result = ((data['close'][n] / data['close'][n - 1]) - 1) * 100
-            diff.append(result)
-
-        Return = DataFrame({'Daily return':[2.5,3.5,3.6,3.1,2.3]})
-        return Return['Daily return']
-
-    def correlation(self, days =365):
-        stockReturn = self.get_diff(days)
-        SPYReturn = self.SPY_diff(days)
-        print(stockReturn, SPYReturn)
-
-        n = len(stockReturn)
-        print(n)
-        stockMean = sum(stockReturn)/n
-        SPYMean = sum(SPYReturn)/n
-        print(stockMean,SPYMean)
-
-        cov = sum((stockReturn-stockMean)*(SPYReturn-SPYMean))/(n-1)
-        print(cov)
-        stockVar = sum((stockReturn - stockMean)**2)/(n-1)
-        SPYVar = sum((SPYReturn - SPYMean)**2)/(n-1)
-        print(stockReturn)
-        print(sum((stockReturn-stockMean)**2))
-        print(stockVar,SPYVar)
-
-        stockSD = stockVar**(0.5)
-        SPYSD = SPYVar**(0.5)
-        print(stockSD,SPYSD)
-        Corr = cov/(stockSD - SPYSD)
-
-        return Corr
-
-def test():
-    AMD = Option('AAPL', 26, 28, 28, 29, 1.26)
-    print(AMD.correlation())
-
-test()
-
-
-
-
-
-
-
-
-
