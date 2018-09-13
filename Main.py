@@ -27,7 +27,7 @@ def plot(Position):
     plt.ylabel('Expire Value')
 
 class get_stats(object):
-    def __init__(self, name, days=90):
+    def __init__(self, name, days=730):
         stock = Stock(name)
         stock.get_open()
 
@@ -56,7 +56,7 @@ class get_stats(object):
     def get_price(self):
         return self.currentPrice
 
-def Get_Beta(sample, index , days = 90):
+def Get_Beta(sample, index ):
     cov = sum((sample.DR - sample.mean)*(index.DR - index.mean))/(index.size-1)
     return cov/index.SD
 
@@ -79,7 +79,7 @@ def Beta_weight(OptionDict):
                 portfolioValue += currentValue
         yVal.append(portfolioValue)
         ref += 0.005
-    plt.figure('Beta Weight')
+    plt.figure('Beta Weighted')
     plt.plot(xVal, yVal)
     plt.axvline(x=SPYPrice, color='r', linestyle='--')
     plt.axhline(y=0, color='g', linestyle='-')
@@ -91,9 +91,21 @@ def Beta_weight(OptionDict):
     plt.show()
 
 def Main():
-    AMD = Option('AMD', 'na', 'na', 30, 35, .87, 10)
-    FXI = Option('FXI',34, 41, 41, 47, 2.38, 10)
+    """
+    Below is an example of how to create a Beta Weighted plot for your portfolio:
+    1. Create your options contract by calling Option(Stock_Name, Long Put, Short Put, Short Call, Long Call, Option Value, # Contracts)
+        Ex: If I want to sell a cover call for AMD at 30/35 for 0.87 credit, 10 contracts
+        I would write it as AMD  = Option('AMD', 'na', 'na', 30, 35, .87, 10)
 
+        If you have more than one option contracts for the same stock then simply create a new instance name:
+        EX: AMD2 = Option('AMD', 27, 29, 29, 31, 1.5, 5)
+
+
+    Call the Beta_weight(Option.List) method inorder to plot the Beta Weighted Portfolio.
+    """
+    AMD = Option('AMD', 28, 31, 32, 35, 2.28, 10)
+    FXI = Option('FXI',34, 41, 41, 47, 2.38, 10)
+    #VXX = Option('VXX', 'na', 'na', 35, 37, 0.31, 10)
     Beta_weight(Option.List)
 
 
